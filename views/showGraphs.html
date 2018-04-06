@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Graphs</title>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+	<% ems = data %>
+	<div id="piechart" style="width: 900px; height: 500px;"></div>
+</body>
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+  	var Happy = '<%= ems.Happy %>';
+  	var Angry = '<%= ems.Angry %>';
+  	var Sad = '<%= ems.Sad %>';
+  	var Sarcasm = '<%= ems.Sarcasm %>';
+  	var Bored = '<%= ems.Bored %>';
+  	var Excited = '<%= ems.Excited %>';
+  	var Fear = '<%= ems.Fear %>';
+    var data = google.visualization.arrayToDataTable([
+      ['Emotions', 'Number of comments'],
+      ['Happy',     parseInt(Happy)],
+      ['Sad',      	parseInt(Sad)],
+      ['Angry',  	parseInt(Angry)],
+      ['Sarcasm', 	parseInt(Sarcasm)],
+      ['Bored',   	parseInt(Bored)],
+      ['Excited',   parseInt(Excited)],
+      ['Fear',    	parseInt(Fear)]
+    ]);
+    var options = {
+      title: 'My Emotion analysis',
+      // is3D: true,
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+    chart.draw(data, options);
+  }
+</script>
+</html>

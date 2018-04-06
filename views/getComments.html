@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Photos</title>
+</head>
+<body>
+	<h1>Comments</h1>
+	<% for(var i=0;i<data.length;i++){ %>
+		<h2>PhotoId: <%= data[i].photoIdid %></h2>
+		<%= data[i].comments %>
+	<% } %>
+</body>
+</html>
