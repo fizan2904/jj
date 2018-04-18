@@ -18,7 +18,10 @@ router.get('/', async (req, res) => {
 			if(comments[i] !== ''){
 				data = await pd.emotion(comments[i],"en");
 				data = JSON.parse(data);
-				emotions.push(data.emotion.emotion);
+				if(data.code === 200){
+					emotions.push(data.emotion.emotion);
+					console.log(data);
+				}
 			}
 		}
 		let ems = {
@@ -35,6 +38,7 @@ router.get('/', async (req, res) => {
 		}
 		return res.render('showGraphs.html', { data: ems });
 	}catch(e){
+		console.log(e);
 		return res.status(500).send('Internal server error');
 	}
 });

@@ -16,7 +16,7 @@ app.set('view engine', 'ejs');
 
 mongoose.connect('mongodb://localhost/jj').then(
 	() => {
-		app.listen(3000, () => {
+		app.listen(8888, () => {
 			console.log('Server started');
 		});
 	},
@@ -28,6 +28,8 @@ mongoose.connect('mongodb://localhost/jj').then(
 import Models from './Models';
 import Routes from './Routes';
 
+app.use('/', Routes.getAccessToken);
+app.use('/menu', Routes.menu);
 app.use('/getUserDetails', Routes.getUserDetails);
 app.use('/getComments', Routes.getComments);
 app.use('/getGraphs', Routes.getGraphs);
