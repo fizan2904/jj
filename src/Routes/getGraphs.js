@@ -14,13 +14,17 @@ router.get('/', async (req, res) => {
 		let comments = await CommentModel.findOne({ access_token: config.access_token }).exec();
 		comments = comments.comments;
 		let emotions=[], data;
-		for(let i=0;i<comments.length;i++){
-			if(comments[i] !== ''){
-				data = await pd.emotion(comments[i],"en");
+		let fin_com = [];
+		console.log(comments);
+		for(let comment of comments){
+			console.log(comment)
+			if(comment !== ''){
+				data = await pd.emotion(comment,"en");
 				data = JSON.parse(data);
 				if(data.code === 200){
 					emotions.push(data.emotion.emotion);
-					console.log(data);
+					fin_com.push(comment);
+					console.log(data.emotion);
 				}
 			}
 		}
@@ -36,7 +40,8 @@ router.get('/', async (req, res) => {
 		for(let i=0;i<emotions.length;i++){
 			ems[emotions[i]] += 1;
 		}
-		return res.render('showGraphs.html', { data: ems });
+		// return res.render('showGraphs.html', { data: ems });
+		return res.send({ems, comments: fin_com});
 	}catch(e){
 		console.log(e);
 		return res.status(500).send('Internal server error');

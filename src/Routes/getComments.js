@@ -46,15 +46,25 @@ router.get('/', async (req, res) => {
 		});
 	}
 	let temp = [];
-	for(let i=0;i<photoComments.length;i++){
-		temp.push(photoComments[i].comments)
+	
+	for(let photoComment of photoComments){
+		if(photoComment !== ''){
+			for(let comm of photoComment.comments){
+				if(comm !== ''){
+					temp.push(comm);
+				}
+			}
+		}
 	}
+
 	const newComments = new CommentModel({
 		access_token: config.access_token,
 		comments: temp
 	});
+	await CommentModel.remove({}).exec();
 	await newComments.save();
-	return res.render('getComments.html', { data: photoComments });
+	// return res.render('getComments.html', { data: photoComments });
+	return res.send(photoComments);
 });
 
 export default router;

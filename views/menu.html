@@ -2,10 +2,131 @@
 <html>
 <head>
 	<title>Menu</title>
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+	<style type="text/css">
+		.center {
+			display: block;
+    		margin: auto;
+    		width: 40%;
+		}
+		.fl {
+			display: flex;
+			flex: 1;
+			justify-content: space-around;
+		}
+		#comments {
+			margin-left: 10px;
+			margin-right: 10px;
+		}
+		#graphs {
+			margin-left: 10px;
+			margin-right: 10px;
+		}
+	</style>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
-	<a href="/getUserDetails"><button>Get User Details</button></a><br />
-	<a href="/getComments"><button>Get Comments</button></a><br />
-	<a href="/getGraphs"><button>Get Graphs</button></a>
+	<center><h1>User Details</h1></center>
+	<div class="center">
+		<p>Name: <%= data.name %></p>
+		<p>UserId: <%= data.id %></p>
+		<button class="btn btn-primary" id="getComments">Get Comments</button>
+		<button class="btn btn-primary" id="getGraphs">Get Graphs</button>
+	</div>
+	<hr />
+	<div class="fl">
+		<div id="comments">
+			
+		</div>
+		<div id="line"></div>
+		<div id="graphs">
+			<div id="piechart" style="width: 900px; height: 500px;"></div>
+		</div>
+	</div>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+	$( document ).ready(function(){
+
+		google.charts.load('current', {'packages':['corechart']});
+		google.charts.setOnLoadCallback(drawChart);
+
+		function draw_vertical_line(width, height, linecolor, xpos, ypos) {
+    		$('#line').css({'width':width, 'height':height, 'background-color':linecolor, 'left':xpos, 'top':ypos, 'position':'absolute'});
+		}
+
+		function drawChart(ems) {
+			var Happy = ems.Happy;
+			var Angry = ems.Angry;
+			var Sad = ems.Sad;
+			var Sarcasm = ems.Sarcasm;
+			var Bored = ems.Bored;
+			var Excited = ems.Excited;
+			var Fear = ems.Fear;
+			var data = google.visualization.arrayToDataTable([
+			  ['Emotions', 'Number of comments'],
+			  ['Happy',     parseInt(Happy)],
+			  ['Sad',      	parseInt(Sad)],
+			  ['Angry',  	parseInt(Angry)],
+			  ['Sarcasm', 	parseInt(Sarcasm)],
+			  ['Bored',   	parseInt(Bored)],
+			  ['Excited',   parseInt(Excited)],
+			  ['Fear',    	parseInt(Fear)]
+			]);
+			var options = {
+			  title: 'My Emotion analysis',
+			  is3D: true,
+			};
+
+			var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+			chart.draw(data, options);
+			return
+		}
+
+		$('#getComments').click(function(){
+			$.ajax({ 
+			    type: 'GET', 
+			    url: '/getComments',
+			    dataType: 'json',
+			    success: function (data) { 
+			        $.each(data, function (index, el){
+			        	$.each(el.comments, function(ind, elem){
+			        		$('#comments').append($('<p>', {
+								text: elem
+							}));
+			        	});
+					});
+			        $('#comments').css("border-right", "1px solid black");
+			    }
+			});
+		});
+
+		$('#getGraphs').click(function(){
+			$.ajax({ 
+			    type: 'GET', 
+			    url: '/getGraphs',
+			    dataType: 'json',
+			    success: function (data) {
+			    	coms = data.comments;
+			    	$("#comments").empty();
+			    	$.each(coms, function (index, el){
+		        		console.log(el)
+		        		$('#comments').append($('<p>', {
+							text: el
+						}));
+					});
+			    	data = data.ems;
+			    	$.each(Object.keys(data), function (index, elem) {
+			    		$("#graphs").append($('<p>', {
+			    			text: elem + ": " +data[elem].toString()
+			    		}));
+			    	});
+			        drawChart(data);
+			        $('#comments').css("border-right", "1px solid black");
+			    }
+			});
+		})
+	});
+</script>
 </html>
